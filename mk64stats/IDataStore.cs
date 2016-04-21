@@ -8,7 +8,8 @@ namespace mk64stats
 {
     interface IDataStore
     {
-        void WriteWin(int playerIndex, int playerCount, int position, string name, int character, int cup, int course);
+        void WriteWin(int raceId, int playerIndex, int playerCount, int position, string name, int character, int cup, int course);
+        int NextRaceId();
         void Close();
     }
 }

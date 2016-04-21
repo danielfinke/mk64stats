@@ -16,7 +16,7 @@ namespace mk64stats.DataStores
             _outputWriter = new StreamWriter(dataFilePath, true);
         }
 
-        public void WriteWin(int playerIndex, int playerCount, int position, string name, int character, int cup, int course)
+        public void WriteWin(int raceId, int playerIndex, int playerCount, int position, string name, int character, int cup, int course)
         {
             _outputWriter.WriteLine("p" + playerIndex + "/" +
                 playerCount + "," +
@@ -26,6 +26,12 @@ namespace mk64stats.DataStores
                 cup + "," +
                 course);
             _outputWriter.Flush();
+        }
+
+        public int NextRaceId()
+        {
+            // TODO: Not implemented
+            return 1;
         }
 
         public void Close()

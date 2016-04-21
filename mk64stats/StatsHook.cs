@@ -7,6 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.IO;
+using mk64stats.Model;
 
 namespace mk64stats
 {
@@ -93,9 +94,8 @@ namespace mk64stats
 
         private void Run()
         {
-            int lastPlayerCount = 0;
             bool[] charSelected = new bool[4];
-            bool[] winRecorded = new bool[4];
+            Race race = new Race(_dataStore.NextRaceId());
 
             while (!_shouldStop && _hooked)
             {
@@ -103,12 +103,10 @@ namespace mk64stats
                 {
                     case GameData.State.CHARACTER_SELECT:
                         int playerCount = ReadProcessMemory(Offsets.PlayerCount);
-                        _gameData.SetPlayerCount(playerCount);
-
-                        if (playerCount != lastPlayerCount)
+                        if (playerCount != race.PlayerCount)
                         {
-                            lastPlayerCount = playerCount;
                             Console.WriteLine("player count: " + playerCount);
+                            race.PlayerCount = playerCount;
                         }
 
                         // Right after the game launches, playerCount will be 0.
@@ -147,7 +145,7 @@ namespace mk64stats
                         bool goBack = false;
 
                         // First, detect when we might have gone back to the character selection screen
-                        for (int i = 0; i < _gameData.GetPlayerCount(); i++)
+                        for (int i = 0; i < race.PlayerCount; i++)
                         {
                             int charSel = ReadProcessMemory(Offsets.CharSelected[i]);
                             if (charSel != 1)
@@ -165,8 +163,7 @@ namespace mk64stats
 
                         int cup = ReadProcessMemory(Offsets.Cup);
                         int course = ReadProcessMemory(Offsets.Course);
-                        _gameData.SetCup(cup);
-                        _gameData.SetCourse(course);
+                        race.SetCourse(cup, course);
 
                         int inRace = ReadProcessMemory(Offsets.InRace);
                         // 1 in 2 player mode, 3 in 3-4 player mode
@@ -181,10 +178,7 @@ namespace mk64stats
                         if (inRace == 1 || inRace == 3)
                         {
                             _gameData.SetState(GameData.State.RACING);
-                            for (int i = 0; i < 4; i++)
-                            {
-                                winRecorded[i] = false;
-                            }
+                            race.Reset();
                             Console.WriteLine("started course: " + Types.CourseName(cup, course) + " (" + Types.CupName(cup) + " Cup)");
                         }
 
@@ -194,7 +188,7 @@ namespace mk64stats
                         goBack = false;
 
                         // First, detect when we might have gone back to the character selection screen
-                        for (int i = 0; i < _gameData.GetPlayerCount(); i++)
+                        for (int i = 0; i < race.PlayerCount; i++)
                         {
                             int charSel = ReadProcessMemory(Offsets.CharSelected[i]);
                             if (charSel != 1)
@@ -211,87 +205,76 @@ namespace mk64stats
                         }
 
                         // Next, check if somebody won a race
-                        if (_gameData.GetPlayerCount() == 2)
+                        if (race.PlayerCount == 2)
                         {
-                            for (int playerIndex = 0; playerIndex < _gameData.GetPlayerCount(); playerIndex++)
+                            for (int playerIndex = 0; playerIndex < race.PlayerCount; playerIndex++)
                             {
                                 int wins = ReadProcessMemory(Offsets.Wins2p[playerIndex]);
-                                if (wins > _gameData.Get2pWins(playerIndex))
+                                if (wins > _gameData.GetMpWins(playerIndex)[0])
                                 {
                                     _gameData.AddWin(playerIndex);
-                                    _dataStore.WriteWin(playerIndex,
-                                                        _gameData.GetPlayerCount(),
-                                                        1,
+
+                                    int otherPlayerIndex = playerIndex == 0 ? 1 : 0;
+                                    race.SetPlacement(playerIndex, 1);
+                                    race.SetPlacement(otherPlayerIndex, 2);
+
+                                    // Safe to assume in 2p the race is over
+                                    _dataStore.WriteWin(race.RaceId,
+                                                        0,
+                                                        race.PlayerCount,
+                                                        race.GetPlacement(0),
                                                         _gameData.GetPlayerName(playerIndex),
                                                         _gameData.GetPlayerChar(playerIndex),
-                                                        _gameData.GetCup(),
-                                                        _gameData.GetCourse());
-                                    int otherPlayerIndex = playerIndex == 0 ? 1 : 0;
-                                    _dataStore.WriteWin(otherPlayerIndex,
-                                                        _gameData.GetPlayerCount(),
-                                                        2,
-                                                        _gameData.GetPlayerName(otherPlayerIndex),
-                                                        _gameData.GetPlayerChar(otherPlayerIndex),
-                                                        _gameData.GetCup(),
-                                                        _gameData.GetCourse());
+                                                        race.Cup,
+                                                        race.Course);
+                                    _dataStore.WriteWin(race.RaceId,
+                                                        1,
+                                                        race.PlayerCount,
+                                                        race.GetPlacement(1),
+                                                        _gameData.GetPlayerName(playerIndex),
+                                                        _gameData.GetPlayerChar(playerIndex),
+                                                        race.Cup,
+                                                        race.Course);
+
+                                    race.Reset(_dataStore.NextRaceId());
+                                    
                                     Console.WriteLine(_gameData.GetPlayerName(playerIndex) + " won!");
                                     break;
                                 }
                             }
                         }
-                        else if (_gameData.GetPlayerCount() > 2)
+                        else if (race.PlayerCount > 2)
                         {
                             for (int i = 0; i < 3; i++)
                             {
-                                for (int playerIndex = 0; playerIndex < _gameData.GetPlayerCount(); playerIndex++)
+                                for (int playerIndex = 0; playerIndex < race.PlayerCount; playerIndex++)
                                 {
-                                    int wins = ReadProcessMemory(Offsets.Wins(_gameData.GetPlayerCount())[playerIndex,i]);
+                                    int wins = ReadProcessMemory(Offsets.Wins(race.PlayerCount)[playerIndex,i]);
                                     if (wins > _gameData.GetMpWins(playerIndex)[i])
                                     {
                                         _gameData.AddWin(playerIndex, i);
-                                        _dataStore.WriteWin(playerIndex,
-                                                            _gameData.GetPlayerCount(),
-                                                            (i + 1),
-                                                            _gameData.GetPlayerName(playerIndex),
-                                                            _gameData.GetPlayerChar(playerIndex),
-                                                            _gameData.GetCup(),
-                                                            _gameData.GetCourse());
-                                        winRecorded[playerIndex] = true;
-                                        Console.WriteLine(_gameData.GetPlayerName(playerIndex) + " placed " + Position(i) + "!");
-                                        break;
-                                    }
-                                }
-                            }
-                            // Check that all wins have been recorded, and if so give player 4 a 4th place if 4 players playing
-                            if (_gameData.GetPlayerCount() == 4)
-                            {
-                                // Index of 4th place player
-                                int lossIndex = -1;
-                                for (int playerIndex = 0; playerIndex < 4; playerIndex++)
-                                {
-                                    if (!winRecorded[playerIndex] && lossIndex == -1)
-                                    {
-                                        lossIndex = playerIndex;
-                                    }
-                                    else if (!winRecorded[playerIndex])
-                                    {
-                                        lossIndex = -1;
-                                        break;
-                                    }
-                                }
-                                if (lossIndex != -1)
-                                {
-                                    _dataStore.WriteWin(lossIndex,
-                                                        _gameData.GetPlayerCount(),
-                                                        4,
-                                                        _gameData.GetPlayerName(lossIndex),
-                                                        _gameData.GetPlayerChar(lossIndex),
-                                                        _gameData.GetCup(),
-                                                        _gameData.GetCourse());
-                                    // Reset the recorded wins again
-                                    for (int i = 0; i < 4; i++)
-                                    {
-                                        winRecorded[i] = false;
+
+                                        race.SetPlacement(playerIndex, i + 1);
+
+                                        if (race.IsOver())
+                                        {
+                                            for (int j = 0; j < race.PlayerCount; j++)
+                                            {
+                                                int placement = race.GetPlacement(j);
+                                                _dataStore.WriteWin(race.RaceId,
+                                                                    j,
+                                                                    race.PlayerCount,
+                                                                    placement,
+                                                                    _gameData.GetPlayerName(j),
+                                                                    _gameData.GetPlayerChar(j),
+                                                                    race.Cup,
+                                                                    race.Course);
+
+                                                Console.WriteLine(_gameData.GetPlayerName(j) + " placed " + Position(placement) + "!");
+                                            }
+                                            race.Reset(_dataStore.NextRaceId());
+                                            break;
+                                        }
                                     }
                                 }
                             }

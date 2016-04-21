@@ -68,6 +68,7 @@
     <Compile Include="DataStores\SQLite.cs" />
     <Compile Include="GameData.cs" />
     <Compile Include="IDataStore.cs" />
+    <Compile Include="Model\Race.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
