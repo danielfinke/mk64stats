@@ -58,8 +58,9 @@ namespace mk64stats
                 }
 
                 Process emulatorProc = procs[0];
+                EventHandler evtHandler = new EventHandler(EmulatorExited);
                 emulatorProc.EnableRaisingEvents = true;
-                emulatorProc.Exited += new EventHandler(EmulatorExited);
+                emulatorProc.Exited += evtHandler;
                 _procHandle = OpenProcess(PROCESS_VM_READ, false, emulatorProc.Id);
 
                 int bytesRead = 0;
@@ -70,6 +71,7 @@ namespace mk64stats
                 if (_romOffset == 0)
                 {
                     // Rom hasn't been loaded yet, so rom offset not chosen
+                    emulatorProc.Exited -= evtHandler;
                     Thread.Sleep(250);
                     continue;
                 }
