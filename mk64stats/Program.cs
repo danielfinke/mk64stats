@@ -9,11 +9,11 @@ namespace mk64stats
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            Main main = new Main();
-            main.Run();
-        }
+        //static void Main(string[] args)
+        //{
+        //    Main main = new Main();
+        //    main.Run();
+        //}
     }
 
     class Main: StatsHook.IStatsHook
@@ -73,6 +73,11 @@ namespace mk64stats
         public void OnUnhook()
         {
             Console.WriteLine("unhooked project64 process");
+        }
+
+        public void Log(string msg)
+        {
+            Console.WriteLine(msg);
         }
     }
 }

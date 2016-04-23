@@ -35,6 +35,7 @@ namespace mk64stats
         {
             void OnHook();
             void OnUnhook();
+            void Log(string msg);
         }
 
         public StatsHook(IStatsHook callback)
@@ -78,7 +79,7 @@ namespace mk64stats
                 _gameData = new GameData();
                 Run();
             }
-            Console.WriteLine("thread down");
+            _callback.Log("thread down");
             _dataStore.Close();
         }
 
@@ -105,7 +106,7 @@ namespace mk64stats
                         int playerCount = ReadProcessMemory(Offsets.PlayerCount);
                         if (playerCount != race.PlayerCount)
                         {
-                            Console.WriteLine("player count: " + playerCount);
+                            _callback.Log("player count: " + playerCount);
                             race.PlayerCount = playerCount;
                         }
 
@@ -120,13 +121,13 @@ namespace mk64stats
                                 charSelected[i] = true;
                                 int character = ReadProcessMemory(Offsets.Chars[i]);
                                 _gameData.SetPlayerChar(i, character);
-                                Console.WriteLine("player " + (i+1) + " selected " + Types.CharacterName(character));
+                                _callback.Log("player " + (i+1) + " selected " + Types.CharacterName(character));
                             }
                             else if (charSelected[i] && charSel == 0)
                             {
                                 charSelected[i] = false;
                                 _gameData.SetPlayerChar(i, 0);
-                                Console.WriteLine("player " + (i+1) + " deselected their character");
+                                _callback.Log("player " + (i+1) + " deselected their character");
                             }
 
                             // If all the players playing have selected, we will move to next state
@@ -136,7 +137,7 @@ namespace mk64stats
                         if (allSelected)
                         {
                             _gameData.SetState(GameData.State.COURSE_SELECT);
-                            Console.WriteLine("moving to course selection");
+                            _callback.Log("moving to course selection");
                         }
 
                         break;
@@ -158,7 +159,7 @@ namespace mk64stats
                         if (goBack)
                         {
                             _gameData.SetState(GameData.State.CHARACTER_SELECT);
-                            Console.WriteLine("cancelled course selection");
+                            _callback.Log("cancelled course selection");
                         }
 
                         int cup = ReadProcessMemory(Offsets.Cup);
@@ -169,17 +170,17 @@ namespace mk64stats
                         // 1 in 2 player mode, 3 in 3-4 player mode
                         if (inRace == 1)
                         {
-                            Console.WriteLine("2 player mode");
+                            _callback.Log("2 player mode");
                         }
                         else if (inRace == 3)
                         {
-                            Console.WriteLine("3-4 player mode");
+                            _callback.Log("3-4 player mode");
                         }
                         if (inRace == 1 || inRace == 3)
                         {
                             _gameData.SetState(GameData.State.RACING);
                             race.Reset();
-                            Console.WriteLine("started course: " + Types.CourseName(cup, course) + " (" + Types.CupName(cup) + " Cup)");
+                            _callback.Log("started course: " + Types.CourseName(cup, course) + " (" + Types.CupName(cup) + " Cup)");
                         }
 
                         break;
@@ -201,7 +202,7 @@ namespace mk64stats
                         if (goBack)
                         {
                             _gameData.SetState(GameData.State.CHARACTER_SELECT);
-                            Console.WriteLine("cancelled game, returned to character select");
+                            _callback.Log("cancelled game, returned to character select");
                         }
 
                         // Next, check if somebody won a race
@@ -238,7 +239,7 @@ namespace mk64stats
 
                                     race.Reset(_dataStore.NextRaceId());
                                     
-                                    Console.WriteLine(_gameData.GetPlayerName(playerIndex) + " won!");
+                                    _callback.Log(_gameData.GetPlayerName(playerIndex) + " won!");
                                     break;
                                 }
                             }
@@ -270,7 +271,7 @@ namespace mk64stats
                                                                     race.Cup,
                                                                     race.Course);
 
-                                                Console.WriteLine(_gameData.GetPlayerName(j) + " placed " + Position(placement) + "!");
+                                                _callback.Log(_gameData.GetPlayerName(j) + " placed " + Position(placement) + "!");
                                             }
                                             race.Reset(_dataStore.NextRaceId());
                                             break;
@@ -285,7 +286,7 @@ namespace mk64stats
                         if (inRace == 0)
                         {
                             _gameData.SetState(GameData.State.COURSE_SELECT);
-                            Console.WriteLine("cancelled game, returned to course select");
+                            _callback.Log("cancelled game, returned to course select");
                         }
 
                         break;
