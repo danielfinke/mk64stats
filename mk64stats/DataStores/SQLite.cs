@@ -23,7 +23,7 @@ namespace mk64stats.DataStores
         public void WriteWin(int raceId, int playerIndex, int playerCount, int position, string name, int character, int cup, int course)
         {
             string cmdStr = "insert into stats (race_id, player_index, player_count, position, name, character, cup, course, timestamp) VALUES (" +
-                playerIndex + ", " + playerCount + ", " + position + ", '" + name + "', " + character + ", " + cup + ", " + course + ", " +
+                raceId + ", " + playerIndex + ", " + playerCount + ", " + position + ", '" + name + "', " + character + ", " + cup + ", " + course + ", " +
                 (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds) + ");";
             SQLiteCommand cmd = new SQLiteCommand(cmdStr, _dbConnection);
             cmd.ExecuteNonQuery();
@@ -39,7 +39,7 @@ namespace mk64stats.DataStores
             {
                 return 1;
             }
-            return (int)result;
+            return (int)(long)result;
         }
 
         public void Close()
