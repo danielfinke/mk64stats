@@ -120,13 +120,13 @@ namespace mk64stats
                                 charSelected[i] = true;
                                 int character = ReadProcessMemory(Offsets.Chars[i]);
                                 _gameData.SetPlayerChar(i, character);
-                                Console.WriteLine("player " + i + " selected " + Types.CharacterName(character));
+                                Console.WriteLine("player " + (i+1) + " selected " + Types.CharacterName(character));
                             }
                             else if (charSelected[i] && charSel == 0)
                             {
                                 charSelected[i] = false;
                                 _gameData.SetPlayerChar(i, 0);
-                                Console.WriteLine("player " + i + " deselected their character");
+                                Console.WriteLine("player " + (i+1) + " deselected their character");
                             }
 
                             // If all the players playing have selected, we will move to next state
@@ -323,13 +323,13 @@ namespace mk64stats
         {
             switch(pos)
             {
-                case 0:
-                    return "1st";
                 case 1:
-                    return "2nd";
+                    return "1st";
                 case 2:
-                    return "3rd";
+                    return "2nd";
                 case 3:
+                    return "3rd";
+                case 4:
                     return "4th";
                 default:
                     throw new Exception();
