@@ -5,9 +5,39 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:mk64stats"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="mk64stats" Height="350" Width="525">
     <Grid>
         <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="120" Margin="10,191,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="499" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
+        <Grid HorizontalAlignment="Left" Height="176" VerticalAlignment="Top" Width="499" Margin="10,10,0,0">
+            <Grid x:Name="player1Grid" HorizontalAlignment="Left" Height="77" VerticalAlignment="Top" Width="237" Margin="8.667,8.667,0,0">
+                <Label x:Name="player1Label" Content="Player 1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ComboBox x:Name="nameBox1" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Width="120" IsEditable="True"
+                          ItemsSource="{Binding Path=PreviousPlayers, IsAsync=True}"
+                          DisplayMemberPath="Name" IsEnabled="False"/>
+                <Image x:Name="player1Char" HorizontalAlignment="Left" Height="57" Margin="156,10,0,0" VerticalAlignment="Top" Width="57" Source="img/question_mark.png"/>
+            </Grid>
+            <Grid x:Name="player2Grid" HorizontalAlignment="Right" Height="77" VerticalAlignment="Top" Width="237" Margin="0,8.667,8.667,0" Visibility="Hidden">
+                <Label x:Name="player2Label" Content="Player 2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ComboBox x:Name="nameBox2" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Width="120" IsEditable="True"
+                          ItemsSource="{Binding Path=PreviousPlayers, IsAsync=True}"
+                          DisplayMemberPath="Name" IsEnabled="False"/>
+                <Image x:Name="player2Char" HorizontalAlignment="Left" Height="57" Margin="156,10,0,0" VerticalAlignment="Top" Width="57" Source="img/question_mark.png"/>
+            </Grid>
+            <Grid x:Name="player3Grid" HorizontalAlignment="Left" Height="77" VerticalAlignment="Bottom" Width="237" Margin="8.667,0,0,8.667" Visibility="Hidden">
+                <Label x:Name="player3Label" Content="Player 3" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ComboBox x:Name="nameBox3" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Width="120" IsEditable="True"
+                          ItemsSource="{Binding Path=PreviousPlayers, IsAsync=True}"
+                          DisplayMemberPath="Name" IsEnabled="False"/>
+                <Image x:Name="player3Char" HorizontalAlignment="Left" Height="57" Margin="156,10,0,0" VerticalAlignment="Top" Width="57" Source="img/question_mark.png"/>
+            </Grid>
+            <Grid x:Name="player4Grid" HorizontalAlignment="Right" Height="77" VerticalAlignment="Bottom" Width="237" Margin="0,0,8.667,8.667" Visibility="Hidden">
+                <Label x:Name="player4Label" Content="Player 4" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ComboBox x:Name="nameBox4" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Width="120" IsEditable="True"
+                          ItemsSource="{Binding Path=PreviousPlayers, IsAsync=True}"
+                          DisplayMemberPath="Name" IsEnabled="False"/>
+                <Image x:Name="player4Char" HorizontalAlignment="Left" Height="57" Margin="156,10,0,0" VerticalAlignment="Top" Width="57" Source="img/question_mark.png"/>
+            </Grid>
+        </Grid>
 
     </Grid>
 </Window>

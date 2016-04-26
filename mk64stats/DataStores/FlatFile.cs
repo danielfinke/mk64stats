@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using mk64stats.Model;
 
 namespace mk64stats.DataStores
 {
@@ -32,6 +33,12 @@ namespace mk64stats.DataStores
         {
             // TODO: Not implemented
             return 1;
+        }
+
+        public List<PreviousPlayer> GetPreviousPlayers()
+        {
+            // TODO: Not implemented
+            return new List<PreviousPlayer>();
         }
 
         public void Close()

@@ -35,6 +35,8 @@ namespace mk64stats
         {
             void OnHook();
             void OnUnhook();
+            void OnPlayerCountChange(int newCount);
+            void OnCharSelect(int playerIndex, int character);
             void Log(string msg);
         }
 
@@ -109,6 +111,7 @@ namespace mk64stats
                         if (playerCount != race.PlayerCount)
                         {
                             _callback.Log("player count: " + playerCount);
+                            _callback.OnPlayerCountChange(playerCount);
                             race.PlayerCount = playerCount;
                         }
 
@@ -124,12 +127,14 @@ namespace mk64stats
                                 int character = ReadProcessMemory(Offsets.Chars[i]);
                                 _gameData.SetPlayerChar(i, character);
                                 _callback.Log("player " + (i+1) + " selected " + Types.CharacterName(character));
+                                _callback.OnCharSelect(i + 1, character);
                             }
                             else if (charSelected[i] && charSel == 0)
                             {
                                 charSelected[i] = false;
                                 _gameData.SetPlayerChar(i, 0);
                                 _callback.Log("player " + (i+1) + " deselected their character");
+                                _callback.OnCharSelect(i + 1, 0);
                             }
 
                             // If all the players playing have selected, we will move to next state

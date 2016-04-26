@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
+using mk64stats.Model;
 
 namespace mk64stats.DataStores
 {
@@ -40,6 +41,20 @@ namespace mk64stats.DataStores
                 return 1;
             }
             return (int)(long)result;
+        }
+
+        public List<PreviousPlayer> GetPreviousPlayers()
+        {
+            string cmdStr = "select distinct name from stats order by name asc";
+            SQLiteCommand cmd = new SQLiteCommand(cmdStr, _dbConnection);
+            SQLiteDataReader reader = cmd.ExecuteReader();
+
+            List<PreviousPlayer> previousPlayers = new List<PreviousPlayer>();
+            while (reader.Read())
+            {
+                previousPlayers.Add(new PreviousPlayer() { Name = reader.GetString(0) });
+            }
+            return previousPlayers;
         }
 
         public void Close()

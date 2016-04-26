@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mk64stats.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace mk64stats
     {
         void WriteWin(int raceId, int playerIndex, int playerCount, int position, string name, int character, int cup, int course);
         int NextRaceId();
+        List<PreviousPlayer> GetPreviousPlayers();
         void Close();
     }
 }
