@@ -239,8 +239,8 @@ namespace mk64stats
                                                         1,
                                                         race.PlayerCount,
                                                         race.GetPlacement(1),
-                                                        _gameData.GetPlayerName(playerIndex),
-                                                        _gameData.GetPlayerChar(playerIndex),
+                                                        _gameData.GetPlayerName(otherPlayerIndex),
+                                                        _gameData.GetPlayerChar(otherPlayerIndex),
                                                         race.Cup,
                                                         race.Course);
 
