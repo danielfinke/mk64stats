@@ -231,16 +231,16 @@ namespace mk64stats
                                                         0,
                                                         race.PlayerCount,
                                                         race.GetPlacement(0),
-                                                        _gameData.GetPlayerName(playerIndex),
-                                                        _gameData.GetPlayerChar(playerIndex),
+                                                        _gameData.GetPlayerName(0),
+                                                        _gameData.GetPlayerChar(0),
                                                         race.Cup,
                                                         race.Course);
                                     _dataStore.WriteWin(race.RaceId,
                                                         1,
                                                         race.PlayerCount,
                                                         race.GetPlacement(1),
-                                                        _gameData.GetPlayerName(otherPlayerIndex),
-                                                        _gameData.GetPlayerChar(otherPlayerIndex),
+                                                        _gameData.GetPlayerName(1),
+                                                        _gameData.GetPlayerChar(1),
                                                         race.Cup,
                                                         race.Course);
 
