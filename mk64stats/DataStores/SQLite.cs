@@ -77,6 +77,7 @@ namespace mk64stats.DataStores
         private static readonly string CREATE_TABLE_SQL =
             "create table stats (" +
             "id integer primary key autoincrement," +
+            "race_id integer," +
             "player_index integer," +
             "player_count integer," +
             "position integer," +
