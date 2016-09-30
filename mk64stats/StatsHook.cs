@@ -80,7 +80,7 @@ namespace mk64stats
 
                 _callback.OnHook();
                 _hooked = true;
-                _gameData = new GameData();
+                _gameData = GameData.NewGameData(_gameData);
                 Run();
             }
             _callback.Log("thread down");
