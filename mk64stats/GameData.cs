@@ -15,6 +15,28 @@ namespace mk64stats
         private int[][] _multiplayerWins;
         private State _state;
 
+        /**
+         * Return a new GameData object, preserving the names of players if
+         * an existing GameData object is supplied
+         * <param name="old">Existing GameData</param>
+         * <returns>A new GameData object with old player names if
+         *          applicable
+         * </returns>
+         */
+        public static GameData NewGameData(GameData old)
+        {
+            if (old == null)
+            {
+                return new GameData();
+            }
+            else
+            {
+                GameData gameData = new GameData();
+                gameData._playerNames = old._playerNames;
+                return gameData;
+            }
+        }
+
         public GameData()
         {
             _multiplayerWins = new int[4][];
