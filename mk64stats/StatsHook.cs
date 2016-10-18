@@ -218,9 +218,9 @@ namespace mk64stats
                             for (int playerIndex = 0; playerIndex < race.PlayerCount; playerIndex++)
                             {
                                 int wins = ReadProcessMemory(Offsets.Wins2p[playerIndex]);
-                                if (wins > _gameData.GetMpWins(playerIndex)[0])
+                                if (wins > _gameData.GetMpWins(race.PlayerCount, playerIndex)[0])
                                 {
-                                    _gameData.AddWin(playerIndex);
+                                    _gameData.AddWin(race.PlayerCount, playerIndex);
 
                                     int otherPlayerIndex = playerIndex == 0 ? 1 : 0;
                                     race.SetPlacement(playerIndex, 1);
@@ -258,9 +258,9 @@ namespace mk64stats
                                 for (int playerIndex = 0; playerIndex < race.PlayerCount; playerIndex++)
                                 {
                                     int wins = ReadProcessMemory(Offsets.Wins(race.PlayerCount)[playerIndex,i]);
-                                    if (wins > _gameData.GetMpWins(playerIndex)[i])
+                                    if (wins > _gameData.GetMpWins(race.PlayerCount, playerIndex)[i])
                                     {
-                                        _gameData.AddWin(playerIndex, i);
+                                        _gameData.AddWin(race.PlayerCount, playerIndex, i);
 
                                         race.SetPlacement(playerIndex, i + 1);
 
