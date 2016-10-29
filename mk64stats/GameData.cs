@@ -12,7 +12,11 @@ namespace mk64stats
         
         private string[] _playerNames = new string[4];
         private int[] _characters = new int[4];
-        private int[][] _multiplayerWins;
+        /**
+         * Dimensions of _multiplayerWins are playerCount-2, playerIndex,
+         * and place
+         */
+        private int[][][] _multiplayerWins;
         private State _state;
 
         /**
@@ -39,10 +43,14 @@ namespace mk64stats
 
         public GameData()
         {
-            _multiplayerWins = new int[4][];
-            for (int i = 0; i < 4; i++)
+            _multiplayerWins = new int[3][][];
+            for (int i = 0; i < 3; i++)
             {
-                _multiplayerWins[i] = new int[3];
+                _multiplayerWins[i] = new int[4][];
+                for (int j = 0; j < 4; j++)
+                {
+                    _multiplayerWins[i][j] = new int[3];
+                }
             }
         }
 
@@ -76,19 +84,19 @@ namespace mk64stats
             _characters[playerIndex] = characterIndex;
         }
 
-        public int[] GetMpWins(int playerIndex)
+        public int[] GetMpWins(int playerCount, int playerIndex)
         {
-            return _multiplayerWins[playerIndex];
+            return _multiplayerWins[playerCount-2][playerIndex];
         }
 
-        public void AddWin(int playerIndex)
+        public void AddWin(int playerCount, int playerIndex)
         {
-            AddWin(playerIndex, 0);
+            AddWin(playerCount, playerIndex, 0);
         }
 
-        public void AddWin(int playerIndex, int pos)
+        public void AddWin(int playerCount, int playerIndex, int pos)
         {
-            _multiplayerWins[playerIndex][pos]++;
+            _multiplayerWins[playerCount-2][playerIndex][pos]++;
         }
     }
 }
